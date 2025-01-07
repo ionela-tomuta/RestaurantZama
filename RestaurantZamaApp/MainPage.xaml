@@ -3,30 +3,75 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="RestaurantZamaApp.MainPage"
              xmlns:viewmodel="clr-namespace:RestaurantZamaApp.ViewModels"
-               x:DataType="viewmodel:MainPageViewModel">
+             xmlns:converter="clr-namespace:RestaurantZamaApp.Converters"
+             x:DataType="viewmodel:MainPageViewModel">
 
-    <VerticalStackLayout Margin="20">
-        <HorizontalStackLayout Spacing="20">
-            <Button Text="Weather" IsVisible="{Binding IsAuthenticated}" Command="{Binding GoToWeatherForecastCommand}"></Button>
-            <Button Text="Logout" IsVisible="{Binding IsAuthenticated}" Command="{Binding LogoutCommand}" Background="IndianRed"></Button>
-            <Label TextColor="CadetBlue" FontAttributes="Bold" Text="{Binding UserName, StringFormat='Hello {0}'}" Margin="0,0,0,0" HorizontalOptions="End"></Label>
-        </HorizontalStackLayout>
-        <Image Source="dotnet_bot.png" HorizontalOptions="CenterAndExpand" VerticalOptions="Start" />
-        <Label Text="Please Create an Account" Margin="0,0,0,10"/>
-        <Label Text="Email Address" />
-        <Entry Text="{Binding RegisterModel.Email}" Margin="0,0,0,5"></Entry>
-        <Label Text="Password" />
-        <Entry Text="{Binding RegisterModel.Password}" IsPassword="True" Margin="0,0,0,5"></Entry>
-        <Button Text="Register" Command="{Binding RegisterCommand}" TextColor="White" Background="Black" CornerRadius="0" Margin="0,0,0,35"></Button>
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <converter:InverseBoolConverter x:Key="InverseBoolConverter"/>
+        </ResourceDictionary>
+    </ContentPage.Resources>
 
-
-        <Label Text="Please Login an Account" Margin="0,0,0,10"/>
-        <Label Text="Email Address" />
-        <Entry Text="{Binding LoginModel.Email}" Margin="0,0,0,5"></Entry>
-        <Label Text="Password" />
-        <Entry Text="{Binding LoginModel.Password}" IsPassword="True" Margin="0,0,0,5"></Entry>
-        <Button Text="Login" Command="{Binding LoginCommand}" CornerRadius="0"></Button>
-
-    </VerticalStackLayout>
-
+    <ScrollView>
+        <VerticalStackLayout Margin="20" Spacing="20">
+            <!-- Authentication Section (shown when not authenticated) -->
+            <VerticalStackLayout IsVisible="{Binding IsAuthenticated, Converter={StaticResource InverseBoolConverter}}">
+                <Image Source="dotnet_bot.png" 
+                       HorizontalOptions="CenterAndExpand" 
+                       VerticalOptions="Start" />
+                <!-- Register Section -->
+                <Label Text="Please Create an Account" 
+                       Margin="0,0,0,10"/>
+                <Label Text="Email Address" />
+                <Entry Text="{Binding RegisterModel.Email}" 
+                       Margin="0,0,0,5"/>
+                <Label Text="Password" />
+                <Entry Text="{Binding RegisterModel.Password}" 
+                       IsPassword="True" 
+                       Margin="0,0,0,5"/>
+                <Button Text="Register" 
+                        Command="{Binding RegisterCommand}" 
+                        TextColor="White" 
+                        BackgroundColor="Black" 
+                        CornerRadius="0" 
+                        Margin="0,0,0,35"/>
+                <!-- Login Section -->
+                <Label Text="Please Login an Account" 
+                       Margin="0,0,0,10"/>
+                <Label Text="Email Address" />
+                <Entry Text="{Binding LoginModel.Email}" 
+                       Margin="0,0,0,5"/>
+                <Label Text="Password" />
+                <Entry Text="{Binding LoginModel.Password}" 
+                       IsPassword="True" 
+                       Margin="0,0,0,5"/>
+                <Button Text="Login" 
+                        Command="{Binding LoginCommand}" 
+                        CornerRadius="0"/>
+            </VerticalStackLayout>
+            <!-- Main Menu (shown when authenticated) -->
+            <VerticalStackLayout IsVisible="{Binding IsAuthenticated}">
+                <Label Text="Restaurant Zama" 
+                       FontSize="24" 
+                       HorizontalOptions="Center"
+                       Margin="0,0,0,20"/>
+                <Button Text="View Menu" 
+                        Command="{Binding ViewMenuCommand}"
+                        Margin="0,0,0,10"
+                        BackgroundColor="Orange"/>
+                <Button Text="Make Reservation" 
+                        Command="{Binding MakeReservationCommand}"
+                        Margin="0,0,0,10"
+                        BackgroundColor="DodgerBlue"/>
+                <Button Text="Profile" 
+                        Command="{Binding GoToProfileCommand}"
+                        Margin="0,0,0,10"
+                        BackgroundColor="Purple"/>
+                <Button Text="Logout" 
+                        Command="{Binding LogoutCommand}"
+                        Margin="0,0,0,10"
+                        BackgroundColor="Red"/>
+            </VerticalStackLayout>
+        </VerticalStackLayout>
+    </ScrollView>
 </ContentPage>

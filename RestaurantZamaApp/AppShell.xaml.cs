@@ -1,4 +1,8 @@
 ﻿using RestaurantZamaApp.Views;
+using RestaurantZamaApp.ViewModels;
+using RestaurantZamaApp.Services;
+using RestaurantZamaApp.Data;
+using RestaurantZamaApp.Models;
 
 namespace RestaurantZamaApp
 {
@@ -7,8 +11,10 @@ namespace RestaurantZamaApp
         public AppShell()
         {
             InitializeComponent();
-            Routing.RegisterRoute(nameof(WeatherForecastPage), typeof(WeatherForecastPage));
-
+            Routing.RegisterRoute(nameof(ProfilePage), typeof(ProfilePage));
+            Routing.RegisterRoute(nameof(ReservationsPage), typeof(ReservationsPage));
+            Routing.RegisterRoute(nameof(OrderPage), typeof(OrderPage));
+            Routing.RegisterRoute(nameof(MenuPage), typeof(MenuPage));
         }
     }
 }

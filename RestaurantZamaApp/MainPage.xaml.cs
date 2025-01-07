@@ -4,10 +4,10 @@ namespace RestaurantZamaApp
 {
     public partial class MainPage : ContentPage
     {
-            public MainPage(MainPageViewModel mainPageViewModel)
+            public MainPage(MainPageViewModel MainPageViewModel)
             {
                 InitializeComponent();
-                BindingContext = mainPageViewModel;
+                BindingContext = MainPageViewModel;
             }
 
         }

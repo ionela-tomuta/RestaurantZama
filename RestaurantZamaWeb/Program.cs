@@ -18,6 +18,9 @@ builder.Services.AddAuthentication();
 builder.Services.AddIdentityApiEndpoints<IdentityUser>()
     .AddEntityFrameworkStores<ZamaIdentityDbContext>();
 
+builder.Services.AddDbContext<ZamaDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("ZamaDatabase")));
+
 
 builder.Services.AddSwaggerGen(options =>
 {

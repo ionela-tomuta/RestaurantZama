@@ -19,7 +19,14 @@ namespace RestaurantZamaApp.ViewModels
         [ObservableProperty]
         private bool isAuthenticated;
 
+        // New properties for special of the day
+        [ObservableProperty]
+        private string specialOfTheDay;
+        [ObservableProperty]
+        private decimal specialPrice;
+
         private readonly ClientService clientService;
+
         public MainPageViewModel(ClientService clientService)
         {
             this.clientService = clientService;
@@ -27,6 +34,7 @@ namespace RestaurantZamaApp.ViewModels
             LoginModel = new();
             IsAuthenticated = false;
             GetUserNameFromSecuredStorage();
+            LoadSpecialOfTheDay();
         }
 
         [RelayCommand]
@@ -57,6 +65,34 @@ namespace RestaurantZamaApp.ViewModels
             await Shell.Current.GoToAsync(nameof(WeatherForecastPage));
         }
 
+        // New commands for restaurant features
+        [RelayCommand]
+        private async Task GoToProfile()
+        {
+            if (!IsAuthenticated)
+            {
+                await Shell.Current.DisplayAlert("Error", "Please login to view profile", "OK");
+                return;
+            }
+            await Shell.Current.GoToAsync(nameof(ProfilePage));
+        }
+        [RelayCommand]
+        private async Task MakeReservation()
+        {
+            if (!IsAuthenticated)
+            {
+                await Shell.Current.DisplayAlert("Error", "Please login to make a reservation", "OK");
+                return;
+            }
+            await Shell.Current.GoToAsync(nameof(ReservationsPage));
+        }
+
+        [RelayCommand]
+        private async Task ViewMenu()
+        {
+            // Navigate to menu page
+            await Shell.Current.GoToAsync(nameof(MenuPage));
+        }
 
         private async void GetUserNameFromSecuredStorage()
         {
@@ -74,6 +110,13 @@ namespace RestaurantZamaApp.ViewModels
             }
             UserName = "Guest";
             IsAuthenticated = false;
+        }
+
+        private void LoadSpecialOfTheDay()
+        {
+            // In a real app, this would load from a service
+            SpecialOfTheDay = "Sarmale cu mămăligă";
+            SpecialPrice = 25.99m;
         }
     }
 }
