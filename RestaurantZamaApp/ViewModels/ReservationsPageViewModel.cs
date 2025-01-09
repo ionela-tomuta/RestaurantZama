@@ -1,67 +1,183 @@
-﻿using CommunityToolkit.Mvvm.Input;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Threading.Tasks;
+﻿using System.ComponentModel;
 using System.Windows.Input;
+using RestaurantZamaShared.Models;
+using RestaurantZamaApp.Services;
+using CommunityToolkit.Mvvm.Input;
 
-public class ReservationsPageViewModel : INotifyPropertyChanged
+namespace RestaurantZamaApp.ViewModels
 {
-    private readonly IReservationService _reservationService;
-
-    public ReservationsPageViewModel(IReservationService reservationService)
+    public class ReservationsPageViewModel : INotifyPropertyChanged
     {
-        _reservationService = reservationService;
-        LoadTablesCommand = new RelayCommand(async () => await LoadTables());
-        LoadAvailableData(); // Asigură-te că încărcăm datele la crearea ViewModel-ului
-    }
+        private readonly IReservationService _reservationService;
 
-    public ICommand LoadTablesCommand { get; }
-
-    private ObservableCollection<Table> _availableTables;
-    public ObservableCollection<Table> AvailableTables
-    {
-        get => _availableTables;
-        set
+        private DateTime _reservationDate = DateTime.Today;
+        public DateTime ReservationDate
         {
-            _availableTables = value;
-            OnPropertyChanged(nameof(AvailableTables));
+            get => _reservationDate;
+            set
+            {
+                _reservationDate = value;
+                OnPropertyChanged(nameof(ReservationDate));
+            }
         }
-    }
 
-    private ObservableCollection<string> _availableDurations;
-    public ObservableCollection<string> AvailableDurations
-    {
-        get => _availableDurations;
-        set
+        private TimeSpan _reservationTime = DateTime.Now.TimeOfDay;
+        public TimeSpan ReservationTime
         {
-            _availableDurations = value;
-            OnPropertyChanged(nameof(AvailableDurations));
+            get => _reservationTime;
+            set
+            {
+                _reservationTime = value;
+                OnPropertyChanged(nameof(ReservationTime));
+            }
         }
+
+        private TimeSpan _duration = TimeSpan.FromHours(1);
+        public TimeSpan Duration
+        {
+            get => _duration;
+            set
+            {
+                _duration = value;
+                OnPropertyChanged(nameof(Duration));
+            }
+        }
+
+        private int _numberOfGuests = 2;
+        public int NumberOfGuests
+        {
+            get => _numberOfGuests;
+            set
+            {
+                _numberOfGuests = value;
+                OnPropertyChanged(nameof(NumberOfGuests));
+            }
+        }
+
+        private string _contactPhone;
+        public string ContactPhone
+        {
+            get => _contactPhone;
+            set
+            {
+                _contactPhone = value;
+                OnPropertyChanged(nameof(ContactPhone));
+            }
+        }
+
+        private string _specialRequests;
+        public string SpecialRequests
+        {
+            get => _specialRequests;
+            set
+            {
+                _specialRequests = value;
+                OnPropertyChanged(nameof(SpecialRequests));
+            }
+        }
+
+        private string _name;
+        public string Name
+        {
+            get => _name;
+            set
+            {
+                _name = value;
+                OnPropertyChanged(nameof(Name));
+            }
+        }
+
+        private bool _isBusy;
+        public bool IsBusy
+        {
+            get => _isBusy;
+            set
+            {
+                _isBusy = value;
+                OnPropertyChanged(nameof(IsBusy));
+            }
+        }
+
+        public DateTime MinimumDate => DateTime.Today;
+
+        public ReservationsPageViewModel(IReservationService reservationService)
+        {
+            _reservationService = reservationService;
+            SubmitReservationCommand = new RelayCommand(async () => await SubmitReservation(),
+                () => !string.IsNullOrWhiteSpace(ContactPhone));
+        }
+
+        public ICommand SubmitReservationCommand { get; }
+
+        private async Task SubmitReservation()
+        {
+            try
+            {
+                IsBusy = true;
+
+                // Validări
+                if (string.IsNullOrWhiteSpace(ContactPhone))
+                {
+                    await Shell.Current.DisplayAlert("Eroare", "Introduceți un număr de telefon", "OK");
+                    return;
+                }
+
+                if (NumberOfGuests <= 0 || NumberOfGuests > 20)
+                {
+                    await Shell.Current.DisplayAlert("Eroare", "Numărul de persoane trebuie să fie între 1 și 20", "OK");
+                    return;
+                }
+
+                if (Duration < TimeSpan.FromMinutes(30) || Duration > TimeSpan.FromHours(4))
+                {
+                    await Shell.Current.DisplayAlert("Eroare", "Durata trebuie să fie între 30 minute și 4 ore", "OK");
+                    return;
+                }
+
+                // Creare rezervare
+                var newReservation = new Reservation
+                {
+                    UserId = Preferences.Get("UserId", 0),
+                    ReservationDate = ReservationDate,
+                    ReservationTime = ReservationTime,
+                    NumberOfGuests = NumberOfGuests,
+                    ContactPhone = ContactPhone,
+                    SpecialRequests = SpecialRequests,
+                    Status = "Pending"
+                };
+
+                var createdReservation = await _reservationService.CreateReservationAsync(newReservation);
+
+                await Shell.Current.DisplayAlert("Succes",
+                    "Rezervarea a fost creată cu succes!", "OK");
+
+                // Resetare câmpuri după creare
+                ResetReservationFields();
+            }
+            catch (Exception ex)
+            {
+                await Shell.Current.DisplayAlert("Eroare",
+                    $"Nu s-a putut crea rezervarea: {ex.Message}", "OK");
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }
+
+        private void ResetReservationFields()
+        {
+            ContactPhone = string.Empty;
+            SpecialRequests = string.Empty;
+            Name = string.Empty;
+            NumberOfGuests = 2;
+            ReservationDate = DateTime.Today;
+            ReservationTime = DateTime.Now.TimeOfDay;
+            Duration = TimeSpan.FromHours(1);
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        private void OnPropertyChanged(string propertyName) =>
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
-
-    private async Task LoadTables()
-    {
-        var tables = await _reservationService.GetAvailableTablesAsync();
-        AvailableTables = new ObservableCollection<Table>(tables);
-    }
-
-    private async Task LoadAvailableData()
-    {
-        AvailableTables = new ObservableCollection<Table>(await _reservationService.GetAvailableTablesAsync());
-        AvailableDurations = new ObservableCollection<string> { "30 min", "1 h", "2 h" }; // Exemplu
-    }
-
-    public event PropertyChangedEventHandler PropertyChanged;
-    private void OnPropertyChanged(string propertyName) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-}
-
-public class Table
-{
-    public string Name { get; set; }
-    public int Capacity { get; set; }
-}
-
-public interface IReservationService
-{
-    Task<IEnumerable<Table>> GetAvailableTablesAsync();
 }

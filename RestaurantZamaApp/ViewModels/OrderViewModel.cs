@@ -1,7 +1,8 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
-using RestaurantZamaApp.Models;
+//using RestaurantZamaApp.Models;
+using RestaurantZamaShared.Models;
 using RestaurantZamaApp.Services;
 using Microsoft.Extensions.Logging;
 
@@ -86,7 +87,7 @@ namespace RestaurantZamaApp.ViewModels
         }
 
         [RelayCommand]
-        private void AddOrderItem(RestaurantZamaApp.Models.MenuItem menuItem)
+        private void AddOrderItem(RestaurantZamaShared.Models.MenuItem menuItem)
         {
             var existingItem = _currentOrder.OrderItems.FirstOrDefault(oi => oi.MenuItemId == menuItem.Id);
 

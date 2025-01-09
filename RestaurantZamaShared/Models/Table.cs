@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Collections.Generic;
 
-namespace RestaurantZamaApp.Models
+namespace RestaurantZamaShared.Models
 {
     public class Table
     {

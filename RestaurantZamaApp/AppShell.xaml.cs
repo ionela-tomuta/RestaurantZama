@@ -1,8 +1,7 @@
 ﻿using RestaurantZamaApp.Views;
 using RestaurantZamaApp.ViewModels;
 using RestaurantZamaApp.Services;
-using RestaurantZamaApp.Data;
-using RestaurantZamaApp.Models;
+using RestaurantZamaShared.Models;
 
 namespace RestaurantZamaApp
 {

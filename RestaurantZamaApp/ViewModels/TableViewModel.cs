@@ -1,4 +1,5 @@
-﻿using RestaurantZamaApp.Models;
+﻿//using RestaurantZamaApp.Models;
+using RestaurantZamaShared.Models;
 using RestaurantZamaApp.Services;
 
 namespace RestaurantZamaApp.ViewModels
@@ -12,7 +13,7 @@ namespace RestaurantZamaApp.ViewModels
 
         public string DisplayName => $"Table {Number} ({Capacity} seats - {Location})";
 
-        public TableViewModel(RestaurantZamaApp.Models.Table table)
+        public TableViewModel(RestaurantZamaShared.Models.Table table)
         {
             Id = table.Id;
             Number = table.Number;

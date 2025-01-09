@@ -1,22 +1,15 @@
 ﻿using System.Net.Http.Json;
 using Microsoft.Extensions.Logging;
-using RestaurantZamaApp.Models;
+using RestaurantZamaShared.Models;
 
 namespace RestaurantZamaApp.Services
 {
     public interface IProfileService
     {
-        // Create (Deși puțin ciudat pentru profil, îl păstrăm pentru consecvență)
         Task<User> CreateProfileAsync(User profile);
-
-        // Read
         Task<User> GetProfileByIdAsync(int id);
         Task<List<User>> GetAllProfilesAsync();
-
-        // Update
         Task<User> UpdateProfileAsync(int id, User profile);
-
-        // Delete
         Task<bool> DeleteProfileAsync(int id);
     }
 
@@ -24,14 +17,13 @@ namespace RestaurantZamaApp.Services
     {
         private readonly HttpClient _httpClient;
         private readonly ILogger<ProfileService> _logger;
-        private const string BaseUrl = "api/profiles";
+        private const string BaseUrl = "api/users"; // Changed from api/profiles to api/users
 
         public ProfileService(HttpClient httpClient, ILogger<ProfileService> logger)
         {
             _httpClient = httpClient;
             _logger = logger;
         }
-
         // CREATE 
         public async Task<User> CreateProfileAsync(User profile)
         {
@@ -81,20 +73,34 @@ namespace RestaurantZamaApp.Services
         }
 
         // UPDATE
+
         public async Task<User> UpdateProfileAsync(int id, User profile)
         {
             try
             {
                 var response = await _httpClient.PutAsJsonAsync($"{BaseUrl}/{id}", profile);
-                response.EnsureSuccessStatusCode();
+
+                if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                {
+                    throw new KeyNotFoundException($"Profilul cu ID {id} nu a fost găsit.");
+                }
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    var errorMessage = await response.Content.ReadAsStringAsync();
+                    _logger.LogError($"Server returned {response.StatusCode}: {errorMessage}");
+                    throw new HttpRequestException($"Eroare server: {response.StatusCode}");
+                }
+
                 return await response.Content.ReadFromJsonAsync<User>();
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error updating profile with ID {id}");
+                _logger.LogError(ex, $"Eroare la actualizarea profilului cu ID {id}");
                 throw;
             }
         }
+
 
         // DELETE
         public async Task<bool> DeleteProfileAsync(int id)

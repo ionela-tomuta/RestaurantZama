@@ -1,4 +1,4 @@
-﻿using RestaurantZamaApp.Models;
+﻿using RestaurantZamaShared.Models;
 using System.Net.Http.Json;
 using System.Text.Json;
 

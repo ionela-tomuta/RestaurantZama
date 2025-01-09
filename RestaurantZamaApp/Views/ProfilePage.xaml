@@ -1,74 +1,60 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="RestaurantZamaApp.Views.ProfilePage"
-             Title="Profil">
+            xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+            xmlns:converter="clr-namespace:RestaurantZamaApp.Converters"
+            x:Class="RestaurantZamaApp.Views.ProfilePage"
+            Title="Profil">
+    <ContentPage.Resources>
+        <converter:InverseBoolConverter x:Key="InverseBoolConverter"/>
+    </ContentPage.Resources>
+
     <ScrollView>
         <StackLayout Padding="20" Spacing="20">
-            <!-- Loading Indicator -->
             <ActivityIndicator IsRunning="{Binding IsBusy}" 
-                             IsVisible="{Binding IsBusy}"
-                             HorizontalOptions="Center" />
+                            IsVisible="{Binding IsBusy}"
+                            HorizontalOptions="Center" />
 
-            <!-- All Profiles Section -->
-            <Frame IsVisible="{Binding AllProfiles.Count, Converter={StaticResource IntToBoolConverter}}">
+            <Frame IsVisible="{Binding CurrentUser, Converter={StaticResource InverseBoolConverter}}">
                 <StackLayout Spacing="10">
-                    <Label Text="Toate Profilurile" 
-                           FontSize="Large" 
-                           FontAttributes="Bold"/>
-                    <CollectionView ItemsSource="{Binding AllProfiles}"
-                                  SelectedItem="{Binding CurrentUser}"
-                                  EmptyView="Nu există profile disponibile.">
-                        <CollectionView.ItemTemplate>
-                            <DataTemplate>
-                                <Frame Margin="0,5" Padding="10">
-                                    <StackLayout>
-                                        <Label Text="{Binding Name}" FontAttributes="Bold"/>
-                                        <Label Text="{Binding Email}"/>
-                                        <Label Text="{Binding PhoneNumber}"/>
-                                        <Label Text="{Binding LoyaltyPoints, StringFormat='Puncte: {0}'}"/>
-                                    </StackLayout>
-                                </Frame>
-                            </DataTemplate>
-                        </CollectionView.ItemTemplate>
-                    </CollectionView>
-                </StackLayout>
-            </Frame>
+                    <Label Text="Informații Profil" 
+                          FontSize="Large" 
+                          FontAttributes="Bold"/>
 
-            <!-- Current User Info Section -->
-            <Frame IsVisible="{Binding CurrentUser, Converter={StaticResource NotNullToBoolConverter}}">
-                <StackLayout Spacing="10">
-                    <Label Text="Informații Profil Curent" 
-                           FontSize="Large" 
-                           FontAttributes="Bold"/>
                     <Entry Text="{Binding CurrentUser.Name}" 
-                           Placeholder="Nume"/>
-                    <Entry Text="{Binding CurrentUser.Email}" 
-                           Placeholder="Email"
-                           Keyboard="Email"/>
-                    <Entry Text="{Binding CurrentUser.PhoneNumber}" 
-                           Placeholder="Telefon"
-                           Keyboard="Telephone"/>
-                    <Label Text="{Binding CurrentUser.LoyaltyPoints, StringFormat='Puncte Loialitate: {0}'}"
-                           FontAttributes="Bold"/>
+                          Placeholder="Nume"
+                          IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBoolConverter}}"/>
 
-                    <Button Text="Actualizează Profil"
-                            Command="{Binding UpdateProfileCommand}"
-                            BackgroundColor="#2ecc71"
-                            TextColor="White"
-                            HeightRequest="50"
-                            CornerRadius="25"
-                            Margin="0,10,0,0"/>
+                    <Entry Text="{Binding CurrentUser.Email}" 
+                          Placeholder="Email"
+                          IsReadOnly="True"
+                          Keyboard="Email"/>
+
+                    <Entry Text="{Binding CurrentUser.PhoneNumber}" 
+                          Placeholder="Telefon"
+                          Keyboard="Telephone"
+                          IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBoolConverter}}"/>
+
+                    <Label Text="{Binding CurrentUser.LoyaltyPoints, StringFormat='Puncte Loialitate: {0}'}"
+                          FontAttributes="Bold"/>
+
+                    <Button Text="Salvează Modificările"
+                           Command="{Binding SaveChangesCommand}"
+                           BackgroundColor="#2ecc71"
+                           TextColor="White"
+                           HeightRequest="50"
+                           CornerRadius="25"
+                           IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBoolConverter}}"
+                           Margin="0,10,0,0"/>
                 </StackLayout>
             </Frame>
 
-            <!-- Refresh Button -->
-            <Button Text="Reîmprospătare Date"
-                    Command="{Binding LoadUserDataCommand}"
-                    BackgroundColor="#3498db"
-                    TextColor="White"
-                    HeightRequest="50"
-                    CornerRadius="25"/>
+            <Button Text="Reîncarcă Date"
+                   Command="{Binding LoadUserDataCommand}"
+                   BackgroundColor="#3498db"
+                   TextColor="White"
+                   HeightRequest="50"
+                   CornerRadius="25"
+                   IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBoolConverter}}"/>
         </StackLayout>
     </ScrollView>
 </ContentPage>

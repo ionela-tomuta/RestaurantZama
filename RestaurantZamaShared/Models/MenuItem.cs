@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RestaurantZamaApp.Models
+namespace RestaurantZamaShared.Models
 {
     public class MenuItem
     {

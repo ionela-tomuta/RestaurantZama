@@ -1,5 +1,5 @@
 ﻿
-namespace RestaurantZamaApp.Models
+namespace RestaurantZamaShared.Models
 {
     public class LoginModel
     {

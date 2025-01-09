@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using RestaurantZamaApp.Models;
+//using RestaurantZamaApp.Models;
+using RestaurantZamaShared.Models;
 using RestaurantZamaApp.Services;
 using RestaurantZamaApp.Views;
 using System.Text.Json;
@@ -57,12 +58,6 @@ namespace RestaurantZamaApp.ViewModels
             IsAuthenticated = false;
             UserName = "Guest";
             await Shell.Current.GoToAsync("..");
-        }
-
-        [RelayCommand]
-        private async Task GoToWeatherForecast()
-        {
-            await Shell.Current.GoToAsync(nameof(WeatherForecastPage));
         }
 
         // New commands for restaurant features

@@ -16,18 +16,5 @@ namespace RestaurantZamaApp.Views
             BindingContext = _viewModel;
         }
 
-        protected override void OnAppearing()
-        {
-            base.OnAppearing();
-            try
-            {
-                // Folosim LoadTablesCommand fãrã ExecuteAsync
-                _viewModel.LoadTablesCommand.Execute(null);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error loading tables on page appearing");
-            }
         }
     }
-}

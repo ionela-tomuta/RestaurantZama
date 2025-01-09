@@ -1,7 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
-using RestaurantZamaApp.Models;
+using RestaurantZamaShared.Models;
 using RestaurantZamaApp.Services;
 
 namespace RestaurantZamaApp.ViewModels
@@ -11,7 +11,7 @@ namespace RestaurantZamaApp.ViewModels
         private readonly IMenuService _menuService;
 
         [ObservableProperty]
-        private ObservableCollection<RestaurantZamaApp.Models.MenuItem> _menuItems = new();
+        private ObservableCollection<RestaurantZamaShared.Models.MenuItem> _menuItems = new();
 
         [ObservableProperty]
         private bool _isBusy;

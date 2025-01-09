@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using System.Net.Http.Json;
-using RestaurantZamaApp.Models;
+using RestaurantZamaShared.Models;
 using Microsoft.Maui.Storage;
 using Microsoft.Maui.ApplicationModel;
 using System.IO;
@@ -10,7 +10,7 @@ namespace RestaurantZamaApp.Services
 {
     public interface IMenuService
     {
-        Task<List<Models.MenuItem>> GetMenuItemsAsync();
+        Task<List<RestaurantZamaShared.Models.MenuItem>> GetMenuItemsAsync();
     }
 
     public class MenuService : IMenuService
@@ -77,13 +77,13 @@ namespace RestaurantZamaApp.Services
             }
         }
 
-        public async Task<List<Models.MenuItem>> GetMenuItemsAsync()
+        public async Task<List<RestaurantZamaShared.Models.MenuItem>> GetMenuItemsAsync()
         {
             try
             {
                 var response = await _httpClient.GetAsync($"{BaseUrl}/items");
                 response.EnsureSuccessStatusCode();
-                return await response.Content.ReadFromJsonAsync<List<Models.MenuItem>>();
+                return await response.Content.ReadFromJsonAsync<List<RestaurantZamaShared.Models.MenuItem>>();
             }
             catch (Exception ex)
             {
@@ -92,13 +92,13 @@ namespace RestaurantZamaApp.Services
             }
         }
 
-        public async Task<Models.MenuItem> CreateMenuItemAsync(Models.MenuItem menuItem)
+        public async Task<RestaurantZamaShared.Models.MenuItem> CreateMenuItemAsync(RestaurantZamaShared.Models.MenuItem menuItem)
         {
             try
             {
                 var response = await _httpClient.PostAsJsonAsync($"{BaseUrl}/items", menuItem);
                 response.EnsureSuccessStatusCode();
-                return await response.Content.ReadFromJsonAsync<Models.MenuItem>();
+                return await response.Content.ReadFromJsonAsync<RestaurantZamaShared.Models.MenuItem>();
             }
             catch (Exception ex)
             {
@@ -107,13 +107,13 @@ namespace RestaurantZamaApp.Services
             }
         }
 
-        public async Task<Models.MenuItem> GetMenuItemByIdAsync(int id)
+        public async Task<RestaurantZamaShared.Models.MenuItem> GetMenuItemByIdAsync(int id)
         {
             try
             {
                 var response = await _httpClient.GetAsync($"{BaseUrl}/items/{id}");
                 response.EnsureSuccessStatusCode();
-                return await response.Content.ReadFromJsonAsync<Models.MenuItem>();
+                return await response.Content.ReadFromJsonAsync<RestaurantZamaShared.Models.MenuItem>();
             }
             catch (Exception ex)
             {
@@ -122,7 +122,7 @@ namespace RestaurantZamaApp.Services
             }
         }
 
-        public async Task<Models.MenuItem> UpdateMenuItemAsync(int id, Models.MenuItem menuItem)
+        public async Task<RestaurantZamaShared.Models.MenuItem> UpdateMenuItemAsync(int id, RestaurantZamaShared.Models.MenuItem menuItem)
         {
             try
             {
@@ -133,7 +133,7 @@ namespace RestaurantZamaApp.Services
 
                 var response = await _httpClient.PutAsJsonAsync($"{BaseUrl}/items/{id}", menuItem);
                 response.EnsureSuccessStatusCode();
-                return await response.Content.ReadFromJsonAsync<Models.MenuItem>();
+                return await response.Content.ReadFromJsonAsync<RestaurantZamaShared.Models.MenuItem>();
             }
             catch (Exception ex)
             {
@@ -156,13 +156,13 @@ namespace RestaurantZamaApp.Services
             }
         }
 
-        public async Task<List<Models.MenuItem>> GetDailySpecialsAsync()
+        public async Task<List<RestaurantZamaShared.Models.MenuItem>> GetDailySpecialsAsync()
         {
             try
             {
                 var response = await _httpClient.GetAsync($"{BaseUrl}/daily-specials");
                 response.EnsureSuccessStatusCode();
-                return await response.Content.ReadFromJsonAsync<List<Models.MenuItem>>();
+                return await response.Content.ReadFromJsonAsync<List<RestaurantZamaShared.Models.MenuItem>>();
             }
             catch (Exception ex)
             {
@@ -171,13 +171,13 @@ namespace RestaurantZamaApp.Services
             }
         }
 
-        public async Task<List<Models.MenuItem>> GetMenuItemsByCategoryAsync(string category)
+        public async Task<List<RestaurantZamaShared.Models.MenuItem>> GetMenuItemsByCategoryAsync(string category)
         {
             try
             {
                 var response = await _httpClient.GetAsync($"{BaseUrl}/items/category/{Uri.EscapeDataString(category)}");
                 response.EnsureSuccessStatusCode();
-                return await response.Content.ReadFromJsonAsync<List<Models.MenuItem>>();
+                return await response.Content.ReadFromJsonAsync<List<RestaurantZamaShared.Models.MenuItem>>();
             }
             catch (Exception ex)
             {

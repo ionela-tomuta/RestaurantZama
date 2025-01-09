@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using System.Net.Http.Json;
-using RestaurantZamaApp.Models;
+using RestaurantZamaShared.Models;
 
 namespace RestaurantZamaApp.Services
 {

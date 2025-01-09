@@ -1,8 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Logging;
-using System.Collections.ObjectModel;
-using RestaurantZamaApp.Models;
+using RestaurantZamaShared.Models;
 using RestaurantZamaApp.Services;
 
 namespace RestaurantZamaApp.ViewModels
@@ -13,13 +12,10 @@ namespace RestaurantZamaApp.ViewModels
         private readonly ILogger<ProfilePageViewModel> _logger;
 
         [ObservableProperty]
-        private User currentUser;
+        private User _currentUser;
 
         [ObservableProperty]
-        private ObservableCollection<User> allProfiles = new();
-
-        [ObservableProperty]
-        private bool isBusy;
+        private bool _isBusy;
 
         public ProfilePageViewModel(
             IProfileService profileService,
@@ -33,39 +29,36 @@ namespace RestaurantZamaApp.ViewModels
         public async Task LoadUserData()
         {
             if (IsBusy) return;
-            try
-            {
-                IsBusy = true;
-                await LoadAllProfilesAsync();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error loading user data");
-                await Shell.Current.DisplayAlert("Eroare", "Nu s-au putut încărca datele utilizatorului", "OK");
-            }
-            finally
-            {
-                IsBusy = false;
-            }
-        }
 
-        private async Task LoadAllProfilesAsync()
-        {
-            if (IsBusy) return;
             try
             {
                 IsBusy = true;
-                var profiles = await _profileService.GetAllProfilesAsync();
-                AllProfiles.Clear();
-                foreach (var profile in profiles)
+                int userId = Preferences.Get("UserId", 0);
+
+                if (userId == 0)
                 {
-                    AllProfiles.Add(profile);
+                    await Shell.Current.DisplayAlert("Eroare", "Utilizatorul nu este autentificat", "OK");
+                    return;
+                }
+
+                CurrentUser = await _profileService.GetProfileByIdAsync(userId);
+                if (CurrentUser == null)
+                {
+                    await Shell.Current.DisplayAlert("Eroare", "Nu s-au putut găsi datele utilizatorului", "OK");
+                    return;
                 }
             }
+            catch (HttpRequestException ex)
+            {
+                _logger.LogError(ex, "Eroare de comunicare cu serverul");
+                await Shell.Current.DisplayAlert("Eroare de conexiune",
+                    "Nu s-a putut stabili conexiunea cu serverul. Verificați conexiunea la internet.", "OK");
+            }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error loading profiles");
-                await Shell.Current.DisplayAlert("Eroare", "Nu s-au putut încărca profilurile", "OK");
+                _logger.LogError(ex, "Eroare neașteptată la încărcarea datelor");
+                await Shell.Current.DisplayAlert("Eroare",
+                    "A apărut o eroare neașteptată la încărcarea datelor", "OK");
             }
             finally
             {
@@ -74,36 +67,41 @@ namespace RestaurantZamaApp.ViewModels
         }
 
         [RelayCommand]
-        private async Task UpdateProfile()
+        public async Task SaveChanges()
         {
-            if (IsBusy) return;
+            if (IsBusy || CurrentUser == null) return;
+
             try
             {
                 IsBusy = true;
-                if (CurrentUser?.Id == 0)
+                int userId = Preferences.Get("UserId", 0);
+
+                if (userId == 0)
                 {
-                    await Shell.Current.DisplayAlert("Eroare", "Selectați un profil pentru actualizare", "OK");
+                    await Shell.Current.DisplayAlert("Eroare", "Utilizatorul nu este autentificat", "OK");
                     return;
                 }
 
-                var updatedProfile = await _profileService.UpdateProfileAsync(CurrentUser.Id, CurrentUser);
-                var index = AllProfiles.IndexOf(AllProfiles.FirstOrDefault(p => p.Id == updatedProfile.Id));
-                if (index != -1)
-                {
-                    AllProfiles[index] = updatedProfile;
-                }
-
-                await Shell.Current.DisplayAlert("Succes", "Profil actualizat", "OK");
+                await _profileService.UpdateProfileAsync(userId, CurrentUser);
+                await Shell.Current.DisplayAlert("Succes", "Modificările au fost salvate", "OK");
+            }
+            catch (HttpRequestException ex)
+            {
+                _logger.LogError(ex, "Eroare la comunicarea cu serverul");
+                await Shell.Current.DisplayAlert("Eroare",
+                    "Nu s-a putut stabili conexiunea cu serverul. Verificați conexiunea la internet.", "OK");
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error updating profile");
-                await Shell.Current.DisplayAlert("Eroare", "Nu s-a putut actualiza profilul", "OK");
+                _logger.LogError(ex, "Eroare la salvarea datelor");
+                await Shell.Current.DisplayAlert("Eroare",
+                    "Nu s-au putut salva modificările. Încercați din nou.", "OK");
             }
             finally
             {
                 IsBusy = false;
             }
         }
+
     }
 }
